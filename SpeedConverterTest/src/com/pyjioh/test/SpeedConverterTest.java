@@ -5,7 +5,7 @@ import com.pyjioh.SpeedConverter;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
 import android.test.ViewAsserts;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.view.KeyEvent;
 import android.widget.EditText;
 
 public class SpeedConverterTest extends
@@ -36,14 +36,12 @@ public class SpeedConverterTest extends
 		super.tearDown();
 	}
 
-	@SmallTest
 	public void testControlsCreated() {
 		assertNotNull(activity);
 		assertNotNull(editKmPerHour);
 		assertNotNull(editMeterPerSec);
 	}
 
-	@SmallTest
 	public void testControlsVisible() {
 		ViewAsserts
 				.assertOnScreen(editKmPerHour.getRootView(), editMeterPerSec);
@@ -51,7 +49,6 @@ public class SpeedConverterTest extends
 				.assertOnScreen(editMeterPerSec.getRootView(), editKmPerHour);
 	}
 
-	@SmallTest
 	public void testStartingEmpty() {
 		assertEquals("editKmPerHour is not empty", "", editKmPerHour.getText()
 				.toString());
@@ -59,13 +56,10 @@ public class SpeedConverterTest extends
 				.getText().toString());
 	}
 
-	@SmallTest
-	public void testKmPerHourToMeterPerSec() {
-		editKmPerHour.clearComposingText();
-		editMeterPerSec.clearComposingText();
-
+	public void testConvertKmhToMs() {
 		TouchUtils.tapView(this, editKmPerHour);
-		sendKeys("1");
+		sendKeys(KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_0,
+				KeyEvent.KEYCODE_0);
 
 		double meterPerSec;
 		try {
@@ -75,7 +69,32 @@ public class SpeedConverterTest extends
 			meterPerSec = -1;
 		}
 
-		assertTrue("100 km/h is not 27.778 m/s: " + meterPerSec,
-				meterPerSec > 27.7 && meterPerSec < 27.8);
+		assertTrue("100 km/h is not 27.778 m/s", meterPerSec > 27.7
+				&& meterPerSec < 27.8);
+
+	}
+
+	public void testConvertMsToKmh() {
+		TouchUtils.tapView(this, editMeterPerSec);
+		sendKeys(KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_5);
+
+		double meterPerSec;
+		try {
+			meterPerSec = Double
+					.parseDouble(editKmPerHour.getText().toString());
+		} catch (Exception e) {
+			meterPerSec = -1;
+		}
+
+		assertTrue("15 m/s is not 54 km/h", meterPerSec == 54);
+	}
+
+	public void testGetError() {
+		TouchUtils.tapView(this, editKmPerHour);
+		sendKeys(KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_DEL);
+
+		assertEquals("Must be Error!",
+				activity.getString(com.pyjioh.R.string.errorMsg),
+				editMeterPerSec.getText().toString());
 	}
 }
