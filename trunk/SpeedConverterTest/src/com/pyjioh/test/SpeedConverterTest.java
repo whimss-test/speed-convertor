@@ -15,9 +15,8 @@ public class SpeedConverterTest extends
 	private EditText editMeterPerSec;
 	private SpeedConverter activity;
 
-	public SpeedConverterTest(String name) {
+	public SpeedConverterTest() {
 		super("com.pyjioh", SpeedConverter.class);
-		setName(name);
 	}
 
 	@Override
@@ -29,11 +28,6 @@ public class SpeedConverterTest extends
 				.findViewById(com.pyjioh.R.id.editKmPerHour);
 		editMeterPerSec = (EditText) activity
 				.findViewById(com.pyjioh.R.id.editMetersPerSec);
-	}
-
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
 	}
 
 	public void testControlsCreated() {
